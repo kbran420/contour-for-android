@@ -151,16 +151,23 @@ public class ImageUpload extends Activity {
 	}
 	
 	private Bitmap createEdgeImage(int progress) {
+		// cast input image into Mat-object for OpenCV to work with
 		Mat mat = new Mat();
     	Bitmap tempBmp = currentSelectedImage.copy(Bitmap.Config.ARGB_8888, false);
     	Utils.bitmapToMat(tempBmp, mat);
     	
+    	// convert input image to grayscale image
     	Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY);
     	
-    	Imgproc.GaussianBlur(mat, mat, new Size(3, 3), 5);
+    	// gaussian blur with autocomputed 3x3 kernel
+    	// sigmaX = 0 ==> sigmaY is automatically set to 0, which results in autocomputation of the kernel
+    	Imgproc.GaussianBlur(mat, mat, new Size(3, 3), 0);
     	
-    	Imgproc.Canny(mat, mat, progress, 2 * progress);
+    	// computing edge image with canny edge detection with low threshold defined by the user
+    	// and high threshold 3 times the low threshold (= 1:3 ratio as recommended)
+    	Imgproc.Canny(mat, mat, progress, 3 * progress);
     	
+    	// dilation of edge image by a 3x3 kernel
 //    	Imgproc.dilate(mat, mat, new Mat());
     	
     	edgeImage = Bitmap.createBitmap(currentSelectedImage.getWidth(),
