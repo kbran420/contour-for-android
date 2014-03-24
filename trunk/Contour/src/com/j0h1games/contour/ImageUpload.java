@@ -16,9 +16,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -95,7 +97,7 @@ public class ImageUpload extends Activity {
 		toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 		
 		SeekBar sbImageUpload = (SeekBar) findViewById(R.id.sbImageUpload);
-		sbImageUpload.setMax(100);
+		sbImageUpload.setMax(120);
 		
 		sbImageUpload.setOnSeekBarChangeListener( new OnSeekBarChangeListener() {
 		    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -106,20 +108,8 @@ public class ImageUpload extends Activity {
 		    	toast.setText("Value: "+ progress);
 		    	toast.show();
 		    	
-		    	Mat mat = new Mat();
-		    	Bitmap tempBmp = currentSelectedImage.copy(Bitmap.Config.ARGB_8888, false);
-		    	Utils.bitmapToMat(tempBmp, mat);
-		    	
-		    	Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY);
-		    	
-//		    	Imgproc.GaussianBlur(mat, mat, new Size(5, 5), 5);
-		    	Imgproc.blur(mat, mat, new Size(3, 3));
-		    	
-		    	Mat edges = new Mat();
-		    	Imgproc.Canny(mat, edges, progress, 2 * progress);
-		    	
-		    	edgeImage = Bitmap.createBitmap(currentSelectedImage.getWidth(),
-		    			currentSelectedImage.getHeight(), currentSelectedImage.getConfig());
+		    	// create edge image from selected image and show in ImageView
+		    	ivImageUpload.setImageBitmap(createEdgeImage(progress));
 		    	
 //		    	// storing currently selected image in Mat-object
 //		    	Mat mat = new Mat();
@@ -145,9 +135,9 @@ public class ImageUpload extends Activity {
 		    	
 		    	//TODO: dilate edge image
 		    	
-		    	Utils.matToBitmap(edges, edgeImage);
+//		    	Utils.matToBitmap(edges, edgeImage);
 		    	
-		    	ivImageUpload.setImageBitmap(edgeImage);		    	
+		    			    	
 		    }
 		    
 		    public void onStartTrackingTouch(SeekBar seekBar) {
@@ -158,6 +148,27 @@ public class ImageUpload extends Activity {
 		        // TODO Auto-generated method stub
 		    }
 		});
+	}
+	
+	private Bitmap createEdgeImage(int progress) {
+		Mat mat = new Mat();
+    	Bitmap tempBmp = currentSelectedImage.copy(Bitmap.Config.ARGB_8888, false);
+    	Utils.bitmapToMat(tempBmp, mat);
+    	
+    	Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY);
+    	
+    	Imgproc.GaussianBlur(mat, mat, new Size(3, 3), 5);
+    	
+    	Imgproc.Canny(mat, mat, progress, 2 * progress);
+    	
+//    	Imgproc.dilate(mat, mat, new Mat());
+    	
+    	edgeImage = Bitmap.createBitmap(currentSelectedImage.getWidth(),
+    			currentSelectedImage.getHeight(), currentSelectedImage.getConfig());
+    	
+    	Utils.matToBitmap(mat, edgeImage);
+    	
+    	return edgeImage;
 	}
 	
 	@Override
@@ -178,6 +189,30 @@ public class ImageUpload extends Activity {
 	         
 	         // convert file path to bitmap
 	         currentSelectedImage = BitmapFactory.decodeFile(filePath);
+	         
+	         //TODO: fix import from picasa causes crash
+	         
+	         //TODO: resize image according to screen size
+	         Display display = getWindowManager().getDefaultDisplay();
+	         Point displaySize = new Point();
+	         display.getSize(displaySize);
+	         
+	         // if resolution of current image is too big, rescale towards device resolution
+	         if (currentSelectedImage.getWidth() > displaySize.x) {
+	        	 float ratio = (float) displaySize.x / (float) currentSelectedImage.getWidth();
+	        	 Bitmap resizedImage = currentSelectedImage.copy(Bitmap.Config.ARGB_8888, true);	        	 
+	        	 currentSelectedImage = Bitmap.createScaledBitmap(resizedImage, 
+	        			 (int) (currentSelectedImage.getWidth() * ratio), 
+	        			 (int) (currentSelectedImage.getHeight() * ratio), false);
+	         }
+	         
+	         if (currentSelectedImage.getHeight() > displaySize.y) {
+	        	 float ratio = (float) displaySize.y / (float) currentSelectedImage.getHeight();
+	        	 Bitmap resizedImage = currentSelectedImage.copy(Bitmap.Config.ARGB_8888, true);	        	 
+	        	 currentSelectedImage = Bitmap.createScaledBitmap(resizedImage, 
+	        			 (int) (currentSelectedImage.getWidth() * ratio), 
+	        			 (int) (currentSelectedImage.getHeight() * ratio), false);
+	         }
 	         
 	         // show selected image in ImageView
 	         ivImageUpload.setImageBitmap(currentSelectedImage);
