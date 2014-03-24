@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger>
+
+    <dataSet config="19.0.0" >
+        <source path="C:\Users\j0h1\Dropbox\Uni\sem 8\BA\Contour\app\build\exploded-aar\com.android.support\appcompat-v7\19.0.0\assets" />
+    </dataSet>
+    <dataSet config="19.0.0" >
+        <source path="C:\Users\j0h1\Dropbox\Uni\sem 8\BA\Contour\app\build\exploded-aar\com.android.support\gridlayout-v7\19.0.0\assets" />
+    </dataSet>
+    <dataSet config="main" >
+        <source path="C:\Users\j0h1\Dropbox\Uni\sem 8\BA\Contour\app\src\main\assets" />
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="C:\Users\j0h1\Dropbox\Uni\sem 8\BA\Contour\app\src\debug\assets" />
+    </dataSet>
+
+</merger>
