@@ -1,5 +1,7 @@
 package com.j0h1games.contour;
 
+import java.io.ByteArrayOutputStream;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -20,6 +22,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
 import android.view.Display;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -27,8 +30,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
@@ -43,6 +48,7 @@ public class ImageUpload extends Activity {
 
 	private ImageView ivImageUpload;
 	private ScrollView svImageUpload;
+	private Button btnImageUpload;
 	
 	// Async Initialization for OpenCV Library Tools
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -147,6 +153,22 @@ public class ImageUpload extends Activity {
 		    public void onStopTrackingTouch(SeekBar seekBar) {
 		        // TODO Auto-generated method stub
 		    }
+		});
+		
+		btnImageUpload = (Button) findViewById(R.id.btnImageUpload);
+		btnImageUpload.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// upload image to server
+				
+				// convert image into a byte array
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();  
+				edgeImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+				byte[] b = baos.toByteArray();
+				
+				// store image as Base64-encoded String
+				String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+			}			
 		});
 	}
 	
