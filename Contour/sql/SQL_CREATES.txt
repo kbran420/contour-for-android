@@ -1,0 +1,80 @@
+// TRACK MIT ÜBERSETZUNG
+
+create table Track (
+	tid INTEGER PRIMARY KEY
+	)
+	
+insert into track values (null)
+
+create table language (
+	code VARCHAR(2) PRIMARY KEY
+	)
+	
+insert into language values ('en')
+insert into language values ('de')
+
+create table track_translation (
+	tid INTEGER NOT NULL,
+	code VARCHAR(2) NOT NULL,
+	name VARCHAR(20) UNIQUE NOT NULL,
+	FOREIGN KEY(tid) REFERENCES track(tid),
+	FOREIGN KEY(code) REFERENCES language(code),
+	PRIMARY KEY (tid, code)
+	)
+	
+insert into track_translation values (1, 'de', 'Kinderbilder')
+insert into track_translation values (1, 'en', 'For Kids')
+
+
+// IMAGES MIT ÜBERSETZUNG
+
+// TODO: VARCHAR(255) vom IMAGE-PATH ANPASSEN, wenn path + dateinamenlänge bestimmt ist
+
+create table image (
+	path VARCHAR(255) PRIMARY KEY
+	)
+	
+create table image_translation (
+	path VARCHAR(255) NOT NULL,
+	code VARCHAR(2) NOT NULL,
+	name VARCHAR(30) UNIQUE NOT NULL,
+	FOREIGN KEY(path) REFERENCES image(path),
+	FOREIGN KEY(code) REFERENCES language(code),
+	PRIMARY KEY (path, code)
+	)
+
+	
+// Verknüpfung zwischen Track und Images (damit Image mehreren Tracks zugewiesen werden kann
+
+create table image_in_track (
+	tid INTEGER NOT NULL,
+	path VARCHAR(255) NOT NULL,
+	position INTEGER NOT NULL,
+	FOREIGN KEY(tid) REFERENCES track(tid),
+	FOREIGN KEY(path) REFERENCES image(path),
+	PRIMARY KEY (tid, path)
+	)
+	
+
+// SESSION
+
+create table session (
+	sid INTEGER PRIMARY KEY,
+	tid INTEGER,
+	player VARCHAR(20) NOT NULL,
+	score REAL NOT NULL,
+	date TEXT NOT NULL,
+	FOREIGN KEY(tid) REFERENCES track(tid)
+	)
+	
+	
+// DRAWING
+
+create table drawing (
+	path VARCHAR(255) PRIMARY KEY,
+	sid INTEGER NOT NULL,
+	FOREIGN KEY(sid) REFERENCES session(sid)
+	)
+	
+	
+
