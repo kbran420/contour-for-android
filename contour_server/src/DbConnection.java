@@ -12,7 +12,8 @@ public class DbConnection {
 	    Connection connection = null;
 	    
 	    try {
-	    	connection = DriverManager.getConnection("jdbc:sqlite:sample.db");
+	    	DatabaseManager.getInstance().openConnection("jdbc:sqlite:sample.db");
+	    	connection = DatabaseManager.getInstance().getConnection();
 	    	Statement statement = connection.createStatement();
 	    	statement.setQueryTimeout(30);
 	    	
