@@ -1,0 +1,1 @@
+Android App that allows you to draw either predefined images or your own images as edge images. This is playful way to improve your own drawing skills. Highscores give it a competetive touch.
